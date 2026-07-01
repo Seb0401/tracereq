@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Proyectos{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Proyectos</h1>
+    <a href="{{ url_for('proyectos.nuevo') }}" class="btn btn-primary">+ Nuevo proyecto</a>
+</div>
+{% if proyectos %}
+<div class="card">
+    <table>
+        <thead><tr><th>Nombre</th><th>Descripción</th><th>Creado</th><th>Acciones</th></tr></thead>
+        <tbody>
+        {% for p in proyectos %}
+        <tr>
+            <td><a href="{{ url_for('proyectos.detalle', id=p.id) }}"><strong>{{ p.nombre }}</strong></a></td>
+            <td>{{ (p.descripcion or '')[:60] }}{% if p.descripcion and p.descripcion|length > 60 %}…{% endif %}</td>
+            <td>{{ p.fecha_creacion.strftime('%d/%m/%Y') }}</td>
+            <td>
+                <a href="{{ url_for('proyectos.editar', id=p.id) }}" class="btn btn-sm btn-secondary">Editar</a>
+                <form method="post" action="{{ url_for('proyectos.eliminar', id=p.id) }}" style="display:inline"
+                      onsubmit="return confirm('¿Eliminar proyecto y todos sus datos?')">
+                    <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state"><p>No hay proyectos. <a href="{{ url_for('proyectos.nuevo') }}">Crear uno</a>.</p></div>
+{% endif %}
+{% endblock %}

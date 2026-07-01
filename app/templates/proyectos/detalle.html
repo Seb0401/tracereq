@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ proyecto.nombre }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>{{ proyecto.nombre }}</h1>
+        {% if proyecto.descripcion %}<p style="color:#666;margin-top:.25rem">{{ proyecto.descripcion }}</p>{% endif %}
+    </div>
+    <div style="display:flex;gap:.5rem">
+        <a href="{{ url_for('proyectos.editar', id=proyecto.id) }}" class="btn btn-secondary">Editar</a>
+        <form method="post" action="{{ url_for('proyectos.eliminar', id=proyecto.id) }}" style="display:inline"
+              onsubmit="return confirm('¿Eliminar el proyecto y TODOS sus datos?')">
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+        </form>
+    </div>
+</div>
+<div class="card">
+    <div class="page-header" style="margin-bottom:.75rem">
+        <h2>Requerimientos ({{ reqs|length }})</h2>
+        <a href="{{ url_for('requerimientos.nuevo', proyecto_id=proyecto.id) }}" class="btn btn-sm btn-primary">+ Nuevo</a>
+    </div>
+    {% if reqs %}
+    <table>
+        <thead><tr><th>ID</th><th>Tipo</th><th>Descripción</th><th>Prioridad</th><th>Estado</th></tr></thead>
+        <tbody>
+        {% for r in reqs %}
+        <tr>
+            <td><a href="{{ url_for('requerimientos.detalle', id=r.id) }}"><strong>{{ r.identificador }}</strong></a></td>
+            <td>{{ r.tipo.replace('_',' ') }}</td>
+            <td>{{ r.descripcion[:60] }}{% if r.descripcion|length > 60 %}…{% endif %}</td>
+            <td>{{ r.prioridad }}</td>
+            <td>{{ r.estado }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}<p style="color:#999">Sin requerimientos.</p>{% endif %}
+</div>
+<div class="card">
+    <div class="page-header" style="margin-bottom:.75rem">
+        <h2>Casos de Uso ({{ casos|length }})</h2>
+        <a href="{{ url_for('casos_uso.nuevo', proyecto_id=proyecto.id) }}" class="btn btn-sm btn-primary">+ Nuevo</a>
+    </div>
+    {% if casos %}
+    <table>
+        <thead><tr><th>ID</th><th>Nombre</th><th>Actor</th></tr></thead>
+        <tbody>
+        {% for cu in casos %}
+        <tr>
+            <td><strong>{{ cu.identificador }}</strong></td>
+            <td><a href="{{ url_for('casos_uso.detalle', id=cu.id) }}">{{ cu.nombre }}</a></td>
+            <td>{{ cu.actor or '—' }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}<p style="color:#999">Sin casos de uso.</p>{% endif %}
+</div>
+{% endblock %}
