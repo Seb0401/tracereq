@@ -11,6 +11,8 @@
         <span class="nav-brand">TraceReq</span>
         <ul class="nav-links">
             <li><a href="{{ url_for('proyectos.lista') }}" {% if 'proyectos' in request.endpoint %}class="active"{% endif %}>Proyectos</a></li>
+            <li><a href="{{ url_for('requerimientos.lista') }}" {% if 'requerimientos' in request.endpoint %}class="active"{% endif %}>Requerimientos</a></li>
+            <li><a href="{{ url_for('casos_uso.lista') }}" {% if 'casos_uso' in request.endpoint %}class="active"{% endif %}>Casos de Uso</a></li>
         </ul>
     </nav>
     <div class="container">
@@ -23,5 +25,7 @@
     </div>
     <footer><p>TraceReq &mdash; Gestión de Requerimientos</p></footer>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>
+

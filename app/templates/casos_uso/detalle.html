@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ cu.identificador }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>{{ cu.identificador }} — {{ cu.nombre }}</h1>
+        <p style="color:#666;margin-top:.2rem">{{ cu.proyecto.nombre }}</p>
+    </div>
+    <div style="display:flex;gap:.5rem">
+        <a href="{{ url_for('casos_uso.editar', id=cu.id) }}" class="btn btn-secondary">Editar</a>
+        <form method="post" action="{{ url_for('casos_uso.eliminar', id=cu.id) }}" style="display:inline"
+              onsubmit="return confirm('¿Eliminar?')">
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+        </form>
+    </div>
+</div>
+<div class="card">
+    <table style="max-width:400px">
+        <tr><th style="width:120px">Actor</th><td>{{ cu.actor or '—' }}</td></tr>
+        <tr><th>Creado</th><td>{{ cu.fecha_creacion.strftime('%d/%m/%Y') }}</td></tr>
+    </table>
+    {% if cu.descripcion %}
+    <hr style="margin:1rem 0;border:none;border-top:1px solid #eee">
+    <p>{{ cu.descripcion }}</p>
+    {% endif %}
+</div>
+<div class="card">
+    <h2 style="margin-bottom:.75rem">Requerimientos asociados</h2>
+    {% set reqs = cu.requerimientos.all() %}
+    {% if reqs %}
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:.4rem">
+        {% for r in reqs %}
+        <li><a href="{{ url_for('requerimientos.detalle', id=r.id) }}">{{ r.identificador }}</a> — {{ r.descripcion[:60] }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p style="color:#999">Sin requerimientos asociados. <a href="{{ url_for('casos_uso.editar', id=cu.id) }}">Editar</a></p>
+    {% endif %}
+</div>
+{% endblock %}

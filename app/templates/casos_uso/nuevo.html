@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Nuevo Caso de Uso{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Nuevo Caso de Uso</h1>
+    <a href="{{ url_for('casos_uso.lista') }}" class="btn btn-secondary">Volver</a>
+</div>
+<div class="card" style="max-width:700px">
+    <form method="post">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div class="form-group">
+                <label>Proyecto *</label>
+                <select name="proyecto_id" id="sel_proyecto" class="form-control" required>
+                    <option value="">— Seleccionar —</option>
+                    {% for p in proyectos %}
+                    <option value="{{ p.id }}" {% if proyecto_id == p.id %}selected{% endif %}>{{ p.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Identificador *</label>
+                <input type="text" name="identificador" class="form-control" placeholder="CU-001" required style="text-transform:uppercase">
+            </div>
+            <div class="form-group" style="grid-column:1/-1">
+                <label>Nombre *</label>
+                <input type="text" name="nombre" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Actor</label>
+                <input type="text" name="actor" class="form-control" placeholder="Usuario, Administrador...">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Descripción</label>
+            <textarea name="descripcion" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Requerimientos funcionales asociados</label>
+            <div id="reqs-container" style="border:1px solid #ccc;border-radius:4px;padding:.5rem;max-height:220px;overflow-y:auto;background:#fafafa">
+                {% if reqs_proy %}
+                {% for r in reqs_proy %}
+                <label style="display:flex;gap:.5rem;padding:.3rem;font-size:.875rem;cursor:pointer">
+                    <input type="checkbox" name="requerimientos" value="{{ r.id }}">
+                    <span><strong>{{ r.identificador }}</strong> — {{ r.descripcion[:60] }}</span>
+                </label>
+                {% endfor %}
+                {% else %}
+                <p style="color:#999;font-size:.875rem;padding:.3rem" id="msg-reqs">Selecciona un proyecto.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Crear caso de uso</button>
+            <a href="{{ url_for('casos_uso.lista') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('sel_proyecto').addEventListener('change', function() {
+    const pid = this.value;
+    if (!pid) return;
+    fetch('/casos-uso/reqs-por-proyecto?proyecto_id=' + pid)
+        .then(r => r.json())
+        .then(data => {
+            const c = document.getElementById('reqs-container');
+            if (!data.reqs.length) { c.innerHTML = '<p style="color:#999;font-size:.875rem;padding:.3rem">Sin requerimientos funcionales.</p>'; return; }
+            c.innerHTML = data.reqs.map(r =>
+                '<label style="display:flex;gap:.5rem;padding:.3rem;font-size:.875rem;cursor:pointer"><input type="checkbox" name="requerimientos" value="' + r.id + '"><span><strong>' + r.identificador + '</strong> — ' + r.descripcion + '</span></label>'
+            ).join('');
+        });
+});
+</script>
+{% endblock %}
