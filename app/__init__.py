@@ -10,6 +10,8 @@ def create_app(config_name='default'):
     db.init_app(app)
 
     from app.routes.proyectos import bp_proyectos
+    from app.routes.requerimientos import bp_reqs
     app.register_blueprint(bp_proyectos, url_prefix='/proyectos')
+    app.register_blueprint(bp_reqs, url_prefix='/requerimientos')
 
     return app
